@@ -64,9 +64,11 @@ Ajudar pessoas a desenvolverem o hábito de poupar e conquistarem segurança fin
 
 ## 👥 Equipe
 
-- Ana Carolina  
-- Arthur  
-- Allan
-- Edmael  
-- Gabriel  
+- Agnes Letícia Soares Ribeiro – Front-End
+- Allan Harrison Lemos de Barros Falcão – Front-End
+- Ana Carolina da Silva Santos – Banco de dados
+- Arthur Henrique Silveira de Paula – Design e Gestão
+- Edmael Paulo Ribeiro Barreto – Back-End/QA
+- Gabriel Gleydson Lima dos Santos – Dados
+
  
