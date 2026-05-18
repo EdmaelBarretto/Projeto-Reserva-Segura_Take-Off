@@ -1,0 +1,296 @@
+import { Home, Trophy, Gift, Target, Store, Flame } from "lucide-react";
+import { ReactNode, useState, useEffect } from "react";
+import ProfileScreen from "./ProfileScreen";
+import { CoinIcon, XPIcon } from "./icons/GameIcons";
+import { useAuth } from "../../context/AuthContext"; // Importação do nosso contexto
+import { statsService } from "../../services/api"; // Importação do nosso endpoint de estatísticas
+
+type DesktopTab = "inicio" | "ligas" | "caixinhas" | "licoes" | "loja";
+
+interface DesktopLayoutProps {
+  currentTab: DesktopTab;
+  onTabChange: (tab: DesktopTab) => void;
+  children: ReactNode;
+}
+
+export default function DesktopLayout({ currentTab, onTabChange, children }: DesktopLayoutProps) {
+  const [showProfile, setShowProfile] = useState(false);
+  
+  // 1. Pegamos o usuário logado a partir do contexto que você já criou
+  const { user } = useAuth();
+
+  console.log("CONTEÚDO DO USER VINDO DO AUTH:", user);
+  
+  // 2. Estado para guardar as estatísticas calculadas pelo backend (Soma do mês, Conquistas, etc)
+  const [stats, setStats] = useState({
+    totalConquistas: 0,
+    guardadoEsteMes: 0,
+    sequenciaAtual: 1
+  });
+  const [loadingStats, setLoadingStats] = useState(true);
+
+  // 3. Busca as estatísticas assim que o usuário estiver disponível
+  useEffect(() => {
+    if (user?.userId) {
+      statsService.buscarPorUsuario(user.userId)
+        .then(setStats)
+        .catch(console.error)
+        .finally(() => setLoadingStats(false));
+    }
+  }, [user]);
+
+  // Variáveis calculadas dinamicamente com base no banco de dados
+  const nomeCompleto = user?.nome || "João Silva";
+  const iniciais = nomeCompleto.substring(0, 2).toUpperCase();
+  const moedas = user?.pontosPremio || 0;
+  
+  // Matemática do XP
+  const xpTotal = user?.xpTotal || 0;
+  const xpProximoNivel = 300;
+  const nivelAtual = Math.floor(xpTotal / xpProximoNivel) + 1;
+  const xpNoNivel = xpTotal % xpProximoNivel;
+  const porcentagemXP = Math.min((xpNoNivel / xpProximoNivel) * 100, 100);
+
+  // Variáveis para o Resumo Mensal
+  const monthlyGoal = 2800; // Mantido estático por enquanto
+  const moedasAcumuladasMes = 1850; // Mantido estático por enquanto
+
+  return (
+    <div className="hidden md:flex h-screen flex-col bg-[#f8f9fb]">
+      {/* Profile Screen Overlay */}
+      {showProfile && <ProfileScreen onClose={() => setShowProfile(false)} />}
+
+      {/* Desktop Header - ESTRUTURA ORIGINAL MANTIDA */}
+      <header className="bg-white border-b border-[#eaecf0] px-10 py-4 shadow-sm">
+        <div className="flex items-center justify-between">
+          {/* Logo */}
+          <div className="flex items-center gap-3">
+            <div
+              className="w-10 h-10 rounded-2xl flex items-center justify-center text-2xl"
+              style={{ backgroundImage: "linear-gradient(135deg, rgb(97, 140, 120) 0%, rgb(63, 168, 162) 100%)" }}
+            >
+              🦖
+            </div>
+            <h1 className="text-xl font-bold text-[#101828] tracking-tight">Reserva Segura</h1>
+          </div>
+
+          {/* Navigation Tabs */}
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => onTabChange("inicio")}
+              className={`px-4 py-2 rounded-2xl text-sm font-semibold transition-colors ${
+                currentTab === "inicio"
+                  ? "bg-white shadow-sm text-[#6a7282]"
+                  : "text-[#6a7282] hover:bg-gray-50"
+              }`}
+            >
+              Início
+            </button>
+            <button
+              onClick={() => onTabChange("ligas")}
+              className={`px-4 py-2 rounded-2xl text-sm font-semibold transition-colors ${
+                currentTab === "ligas"
+                  ? "bg-[#f0f4f2] text-[#618c78]"
+                  : "text-[#6a7282] hover:bg-gray-50"
+              }`}
+            >
+              Ligas
+            </button>
+            <button
+              onClick={() => onTabChange("licoes")}
+              className={`px-4 py-2 rounded-2xl text-sm font-semibold transition-colors ${
+                currentTab === "licoes"
+                  ? "bg-[#f0f4f2] text-[#618c78]"
+                  : "text-[#6a7282] hover:bg-gray-50"
+              }`}
+            >
+              Lições
+            </button>
+            <button
+              onClick={() => onTabChange("caixinhas")}
+              className={`px-4 py-2 rounded-2xl text-sm font-semibold transition-colors ${
+                currentTab === "caixinhas"
+                  ? "bg-[#f0f4f2] text-[#618c78]"
+                  : "text-[#6a7282] hover:bg-gray-50"
+              }`}
+            >
+              Caixinhas
+            </button>
+            <button
+              onClick={() => onTabChange("loja")}
+              className={`px-4 py-2 rounded-2xl text-sm font-semibold transition-colors ${
+                currentTab === "loja"
+                  ? "bg-[#f0f4f2] text-[#618c78]"
+                  : "text-[#6a7282] hover:bg-gray-50"
+              }`}
+            >
+              Loja
+            </button>
+          </div>
+
+          {/* User Profile */}
+          <div className="flex items-center gap-4">
+            <div className="bg-[#618c78] rounded-full px-4 py-2 flex items-center gap-2">
+              <CoinIcon size={20} />
+              <span className="text-sm font-bold text-white">
+                {moedas}
+              </span>
+            </div>
+            <button
+              onClick={() => setShowProfile(true)}
+              className="relative hover:opacity-80 transition-opacity"
+            >
+              <div
+                className="w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-semibold border-2 border-white shadow-md"
+                style={{ backgroundImage: "linear-gradient(135deg, rgb(136, 169, 131) 50%, rgb(63, 168, 162) 100%)" }}
+              >
+                {iniciais}
+              </div>
+              <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-[#618c78] rounded-full flex items-center justify-center text-white text-xs font-bold border border-white">
+                {nivelAtual}
+              </div>
+            </button>
+          </div>
+        </div>
+      </header>
+
+      {/* Main Content Area - ESTRUTURA ORIGINAL MANTIDA */}
+      <div className="flex flex-1 overflow-hidden">
+        {/* Sidebar (Esquerda) */}
+        <aside className="bg-white border-r border-[#eaecf0] w-80 overflow-y-auto p-8 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
+          {/* Profile Card */}
+          <button
+            onClick={() => setShowProfile(true)}
+            className="w-full border border-[#eaecf0] rounded-2xl shadow-sm overflow-hidden mb-5 hover:shadow-md transition-shadow text-left"
+          >
+            <div
+              className="h-20"
+              style={{ backgroundImage: "linear-gradient(162.446deg, rgb(97, 140, 120) 0%, rgb(63, 168, 162) 100%)" }}
+            />
+            <div className="bg-white px-5 pb-5">
+              <div className="relative -mt-8 mb-4">
+                <div
+                  className="w-16 h-16 rounded-full flex items-center justify-center text-white text-2xl border-4 border-white shadow-lg"
+                  style={{ backgroundImage: "linear-gradient(135deg, rgb(136, 169, 131) 50%, rgb(63, 168, 162) 100%)" }}
+                >
+                   {iniciais}
+                </div>
+                <div className="absolute bottom-0 right-0 w-6 h-6 bg-[#618c78] rounded-full flex items-center justify-center text-white text-xs font-bold border-2 border-white">
+                   {nivelAtual}
+                </div>
+              </div>
+              <h3 className="text-lg font-bold text-[#101828] mb-1">
+                {nomeCompleto}
+              </h3>
+              <p className="text-sm text-[#6a7282] mb-4">
+                Aspirante Nível {nivelAtual}
+              </p>
+
+              {/* XP Progress */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between text-sm">
+                  <div className="flex items-center gap-2">
+                    <XPIcon size={16} />
+                    <span className="font-semibold text-[#4a5565]">
+                      {xpNoNivel} / {xpProximoNivel} XP
+                    </span>
+                  </div>
+                  <span className="font-bold text-[#618c78]">
+                    {Math.round(porcentagemXP)}%
+                  </span>
+                </div>
+                <div className="w-full h-2.5 bg-[#e5e7eb] rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-gradient-to-r from-[#86a783] to-[#5bb49b] rounded-full transition-all duration-500" 
+                    style={{ width: `${porcentagemXP}%` }} 
+                  />
+                </div>
+              </div>
+            </div>
+          </button>
+
+          {/* Stats Label */}
+          <h4 className="text-xs font-bold text-[#101828] uppercase tracking-wide opacity-50 mb-4">
+            Estatísticas
+          </h4>
+
+          {/* Streak Card */}
+          <div
+            className="rounded-2xl p-5 mb-4"
+            style={{ backgroundImage: "linear-gradient(170.174deg, rgb(97, 140, 120) 8.5335%, rgb(123, 241, 168) 91.467%)" }}
+          >
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center">
+                <Flame className="w-6 h-6 text-white" strokeWidth={2.5} />
+              </div>
+              <div className="flex-1">
+                <p className="text-xs text-white/85 mb-1">Sequência atual</p>
+                <p className="text-2xl font-bold text-white">
+                  {loadingStats ? "-" : stats.sequenciaAtual} dias
+                </p>
+              </div>
+              <div className="text-right">
+                <p className="text-xs text-white/70 mb-1">Recorde</p>
+                <p className="text-base font-bold text-white">
+                  {loadingStats ? "-" : stats.sequenciaAtual} dias
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Achievements Card */}
+          <div
+            className="rounded-2xl p-5 mb-5"
+            style={{ backgroundImage: "linear-gradient(171.743deg, rgb(193, 140, 0) 25.12%, rgb(241, 221, 123) 91.467%)" }}
+          >
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center">
+                <Trophy className="w-6 h-6 text-white" strokeWidth={2.5} />
+              </div>
+              <div className="flex-1">
+                <p className="text-xs text-white/85 mb-1">Conquistas</p>
+                <p className="text-2xl font-bold text-white">
+                  {loadingStats ? "-" : stats.totalConquistas}
+                </p>
+              </div>
+              <div className="text-right">
+                <p className="text-xs text-white/70 mb-1">Próxima</p>
+                <p className="text-base font-bold text-white">#{loadingStats ? "-" : stats.totalConquistas + 1}</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Monthly Summary */}
+          <div className="bg-white border border-[#eaecf0] rounded-2xl shadow-sm p-5">
+            <h4 className="text-sm font-bold text-[#101828] mb-4">Resumo Mensal</h4>
+            <div className="space-y-3.5">
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-[#6a7282]">Total poupado</span>
+                <span className="text-sm font-bold text-[#101828]">R$ {stats.guardadoEsteMes.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-[#6a7282]">Meta do mês</span>
+                <span className="text-sm font-bold text-[#618c78]">R$ {monthlyGoal.toLocaleString("pt-BR")}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-[#6a7282]">Missões completas</span>
+                <span className="text-sm font-bold text-[#101828]">{loadingStats ? "- / -" : `${stats.totalConquistas}`}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-[#6a7282]">Moedas acumuladas</span>
+                <span className="text-sm font-bold text-[#bb4d00]">
+                  {moedasAcumuladasMes.toLocaleString("pt-BR")}
+                </span>
+              </div>
+            </div>
+          </div>
+        </aside>
+
+        {/* Main Content (Direita) */}
+        <main className="flex-1 overflow-y-auto">
+          {children}
+        </main>
+      </div>
+    </div>
+  );
+}
