@@ -8,6 +8,7 @@ import br.com.reservasegura.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -24,6 +25,10 @@ public class GoalService {
         Goal goal = new Goal();
         goal.setNome(request.nome);
         goal.setValorAlvo(request.valorAlvo);
+        goal.setCategoria(request.categoria);
+        goal.setMetaMensal(request.metaMensal);
+        goal.setIcone(request.icone);
+        goal.setDataInicio(request.dataInicio != null ? request.dataInicio : LocalDate.now());
         goal.setUser(user);
 
         return goalRepository.save(goal);
@@ -36,5 +41,11 @@ public class GoalService {
     public Goal buscarPorId(String id) {
         return goalRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Meta não encontrada"));
+    }
+
+    public void deletar(String id) {
+        goalRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Meta não encontrada"));
+        goalRepository.deleteById(id);
     }
 }

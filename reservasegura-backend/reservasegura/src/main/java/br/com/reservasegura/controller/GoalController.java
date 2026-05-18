@@ -30,4 +30,10 @@ public class GoalController {
     public ResponseEntity<Goal> buscar(@PathVariable String id) {
         return ResponseEntity.ok(service.buscarPorId(id));
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletar(@PathVariable String id) {
+        service.deletar(id);
+        return ResponseEntity.noContent().build();
+    }
 }

@@ -20,29 +20,44 @@ public class TransactionService {
     private final GoalRepository goalRepository;
     private final UserRepository userRepository;
 
-    public Transaction depositar(DepositRequest request) {
+    public Transaction movimentar(DepositRequest request) {
         Goal goal = goalRepository.findById(request.goalId)
                 .orElseThrow(() -> new RuntimeException("Meta não encontrada"));
         User user = userRepository.findById(request.userId)
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
 
-        goal.setValorAtual(goal.getValorAtual() + request.valor);
+        String tipo = (request.tipo != null && request.tipo.equalsIgnoreCase("SAQUE")) ? "SAQUE" : "DEPOSITO";
+
+        if (tipo.equals("SAQUE")) {
+            if (goal.getValorAtual() < request.valor)
+                throw new RuntimeException("Saldo insuficiente na caixinha");
+            goal.setValorAtual(goal.getValorAtual() - request.valor);
+        } else {
+            goal.setValorAtual(goal.getValorAtual() + request.valor);
+            // Ganha XP proporcional ao depósito
+            int xpGanho = (int) (request.valor / 10);
+            user.setXpTotal(user.getXpTotal() + xpGanho);
+            // Ganha moedas (pontosPremio) proporcional
+            int moedasGanhas = (int) (request.valor / 50);
+            user.setPontosPremio(user.getPontosPremio() + moedasGanhas);
+            userRepository.save(user);
+        }
         goalRepository.save(goal);
 
         Transaction transaction = new Transaction();
         transaction.setValor(request.valor);
-        transaction.setTipo("DEPOSITO");
+        transaction.setTipo(tipo);
         transaction.setGoal(goal);
         transaction.setUser(user);
-
-        int xpGanho = (int) (request.valor / 10);
-        user.setXpTotal(user.getXpTotal() + xpGanho);
-        userRepository.save(user);
 
         return transactionRepository.save(transaction);
     }
 
     public List<Transaction> listarPorUsuario(String userId) {
         return transactionRepository.findByUserId(userId);
+    }
+
+    public List<Transaction> listarPorMeta(String goalId) {
+        return transactionRepository.findByGoalId(goalId);
     }
 }

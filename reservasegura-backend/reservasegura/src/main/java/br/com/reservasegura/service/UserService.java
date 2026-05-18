@@ -1,8 +1,6 @@
 package br.com.reservasegura.service;
 
-import br.com.reservasegura.dto.AuthResponse;
-import br.com.reservasegura.dto.LoginRequest;
-import br.com.reservasegura.dto.RegisterRequest;
+import br.com.reservasegura.dto.*;
 import br.com.reservasegura.entity.User;
 import br.com.reservasegura.repository.UserRepository;
 import br.com.reservasegura.security.JwtService;
@@ -32,7 +30,7 @@ public class UserService {
         repository.save(user);
 
         String token = jwtService.gerarToken(user.getEmail());
-        return new AuthResponse(token, user.getId(), user.getNome());
+        return new AuthResponse(token, user);
     }
 
     public AuthResponse login(LoginRequest request) {
@@ -43,11 +41,27 @@ public class UserService {
             throw new RuntimeException("Senha incorreta");
 
         String token = jwtService.gerarToken(user.getEmail());
-        return new AuthResponse(token, user.getId(), user.getNome());
+        return new AuthResponse(token, user);
     }
 
     public User buscarPorId(String id) {
         return repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+    }
+
+    public User atualizarPerfil(String id, UpdateProfileRequest request) {
+        User user = buscarPorId(id);
+        if (request.nome != null && !request.nome.isBlank()) user.setNome(request.nome);
+        if (request.telefone != null) user.setTelefone(request.telefone);
+        if (request.dataNascimento != null) user.setDataNascimento(request.dataNascimento);
+        return repository.save(user);
+    }
+
+    public void alterarSenha(String id, ChangePasswordRequest request) {
+        User user = buscarPorId(id);
+        if (!passwordEncoder.matches(request.senhaAtual, user.getSenha()))
+            throw new RuntimeException("Senha atual incorreta");
+        user.setSenha(passwordEncoder.encode(request.novaSenha));
+        repository.save(user);
     }
 }

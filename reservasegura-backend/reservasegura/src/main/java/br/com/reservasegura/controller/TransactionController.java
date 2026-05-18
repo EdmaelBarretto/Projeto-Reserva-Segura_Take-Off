@@ -16,13 +16,26 @@ public class TransactionController {
 
     private final TransactionService service;
 
+    /** Depósito ou Saque — definido pelo campo "tipo" no body ("DEPOSITO" ou "SAQUE") */
+    @PostMapping
+    public ResponseEntity<Transaction> movimentar(@RequestBody DepositRequest request) {
+        return ResponseEntity.ok(service.movimentar(request));
+    }
+
+    /** Mantido para compatibilidade com o api.js anterior */
     @PostMapping("/deposito")
     public ResponseEntity<Transaction> depositar(@RequestBody DepositRequest request) {
-        return ResponseEntity.ok(service.depositar(request));
+        request.tipo = "DEPOSITO";
+        return ResponseEntity.ok(service.movimentar(request));
     }
 
     @GetMapping
     public ResponseEntity<List<Transaction>> listar(@RequestParam String userId) {
         return ResponseEntity.ok(service.listarPorUsuario(userId));
+    }
+
+    @GetMapping("/meta/{goalId}")
+    public ResponseEntity<List<Transaction>> listarPorMeta(@PathVariable String goalId) {
+        return ResponseEntity.ok(service.listarPorMeta(goalId));
     }
 }
