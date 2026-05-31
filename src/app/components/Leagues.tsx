@@ -1,10 +1,12 @@
 import { ArrowLeft } from "lucide-react";
+import { useAuth } from "../../context/AuthContext";
 
 interface LeaguesProps {
   onBack: () => void;
 }
 
 export default function Leagues({ onBack }: LeaguesProps) {
+  const { user } = useAuth();
   const avatarColors = [
     "from-blue-400 to-blue-600",
     "from-green-400 to-green-600",
@@ -19,8 +21,7 @@ export default function Leagues({ onBack }: LeaguesProps) {
   const leagueData = [
     { id: 1, name: "Maria Santos", xp: 53, zone: "promotion", color: 0 },
     { id: 2, name: "Pedro Costa", xp: 45, zone: "promotion", color: 1 },
-    { id: 3, name: "João Silva", xp: 36, zone: "promotion", color: 2, isCurrentUser: true },
-    { id: 4, name: "Ana Oliveira", xp: 27, zone: "promotion", color: 3 },
+{ id: 3, name: user?.nome || "Carregando...", xp: 36, zone: "promotion", color: 2, isCurrentUser: true },    { id: 4, name: "Ana Oliveira", xp: 27, zone: "promotion", color: 3 },
     { id: 5, name: "Carlos Souza", xp: 23, zone: "promotion", color: 4 },
     { id: 6, name: "Juliana Lima", xp: 20, zone: "promotion", color: 5 },
     { id: 7, name: "Rafael Alves", xp: 15, zone: "promotion", color: 6 },
@@ -54,7 +55,7 @@ export default function Leagues({ onBack }: LeaguesProps) {
     <div className="h-full bg-white md:bg-gray-50 flex flex-col">
       {/* Header */}
       <div className="bg-white border-b border-gray-200 px-4 md:px-8 py-3 md:py-4">
-        <div className="flex items-center gap-3 max-w-5xl mx-auto">
+        <div className="flex items-center gap-3 max-w-5xl mx-auto min-h-[40px]">
           <button onClick={onBack} className="md:hidden p-2 hover:bg-gray-100 rounded-full transition-colors">
             <ArrowLeft className="w-5 h-5 text-[#101828]" />
           </button>
@@ -133,7 +134,7 @@ export default function Leagues({ onBack }: LeaguesProps) {
                   </span>
                   <div className={`w-10 h-10 rounded-full bg-gradient-to-br ${avatarColors[user.color || 0]} flex items-center justify-center text-xl`}>
                     {user.avatar}
-                  </div>
+                  </div>  
                   <span className="flex-1 text-sm font-semibold text-[#101828]">
                     {user.name}
                   </span>

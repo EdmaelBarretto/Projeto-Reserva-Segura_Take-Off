@@ -1,4 +1,4 @@
-import { BookOpen, Play, Shield, BarChart3, PiggyBank, TrendingUp } from "lucide-react";
+import { BookOpen, Play, Shield, BarChart3, PiggyBank, TrendingUp, ArrowLeft } from "lucide-react";
 import { useState } from "react";
 import LessonsList from "./LessonsList";
 import LessonDetail from "./LessonDetail";
@@ -98,24 +98,27 @@ export default function Lessons({ onBack }: LessonsProps) {
   // Home View
   return (
     <div className="h-full overflow-auto bg-[#f9fafb]">
-      {/* Header - Mobile */}
-      <div className="md:hidden px-4 py-6">
-        <div className="flex items-center justify-between mb-1">
-          <h1 className="text-2xl font-bold text-[#101828]">Lições</h1>
-          <button className="px-4 py-2 bg-[#618c78] text-white rounded-full text-sm font-semibold">
+      
+      {/* Header Padronizado */}
+      <div className="bg-white border-b border-gray-200 px-4 md:px-8 py-3 md:py-4">
+        <div className="flex items-center justify-between max-w-5xl mx-auto min-h-[40px]">
+          <div className="flex items-center gap-3">
+            <button onClick={onBack} className="md:hidden p-2 hover:bg-gray-100 rounded-full transition-colors">
+              <ArrowLeft className="w-5 h-5 text-[#101828]" />
+            </button>
+            <h1 className="text-xl md:text-2xl font-bold text-[#101828]">Lições</h1>
+          </div>
+          
+          <button 
+            onClick={() => setCurrentView("list")} 
+            className="md:hidden px-4 py-2 bg-[#618c78] text-white rounded-full text-sm font-semibold active:bg-[#4a7862] transition-colors"
+          >
             Ir para lista
           </button>
         </div>
-        <p className="text-sm text-[#6a7282]">Continue aprendendo sobre educação financeira</p>
       </div>
 
-      {/* Header - Desktop */}
-      <div className="hidden md:block px-8 py-8">
-        <h1 className="text-4xl font-bold text-[#101828] mb-2">Trilhas de Aprendizado</h1>
-        <p className="text-lg text-[#6a7282]">Desenvolva suas habilidades financeiras com nossos cursos</p>
-      </div>
-
-      <div className="px-4 md:px-8 pb-20 md:pb-8">
+      <div className="px-4 md:px-8 py-6 md:py-8 pb-20 md:pb-8 max-w-5xl mx-auto">
         {/* Featured Banner */}
         <div
           className="rounded-3xl p-6 md:p-8 mb-6 relative overflow-hidden"

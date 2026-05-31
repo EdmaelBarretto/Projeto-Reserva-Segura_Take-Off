@@ -86,7 +86,7 @@ export default function ProfileScreen({ onClose }: ProfileScreenProps) {
           {/* Username & Join Date */}
           <div className="text-center mb-6">
       <p className="text-sm font-semibold text-[#6a7282] uppercase tracking-wide">
-        @{user?.username || "usuario"} • AQUI DESDE {anoIngresso}
+        @{user?.username || "marianasouza7"} • AQUI DESDE {anoIngresso}
       </p>
           </div>
 

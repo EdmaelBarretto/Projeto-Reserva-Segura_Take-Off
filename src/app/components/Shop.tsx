@@ -130,11 +130,14 @@ export default function Shop({ onBack }: ShopProps) {
     <div className="h-full bg-gray-50 flex flex-col">
       {/* Header */}
       <div className="bg-white border-b border-gray-200 px-4 md:px-8 py-3 md:py-4">
-        <div className="flex items-center gap-3 max-w-7xl mx-auto">
-          <button onClick={onBack} className="md:hidden p-2 hover:bg-gray-100 rounded-full transition-colors">
-            <ArrowLeft className="w-5 h-5 text-[#101828]" />
-          </button>
-          <h1 className="text-xl md:text-2xl font-bold text-[#101828]">Loja</h1>
+        <div className="flex items-center justify-between max-w-5xl mx-auto min-h-[40px]">
+          <div className="flex items-center gap-3">
+            {/* Note que tiramos o "md:hidden" daqui para a seta aparecer no PC também */}
+            <button onClick={onBack} className="md:hidden p-2 hover:bg-gray-100 rounded-full transition-colors">
+              <ArrowLeft className="w-5 h-5 text-[#101828]" />
+            </button>
+            <h1 className="text-xl md:text-2xl font-bold text-[#101828]">Loja</h1>
+          </div>
         </div>
       </div>
 

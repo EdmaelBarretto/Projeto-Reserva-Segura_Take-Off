@@ -58,27 +58,19 @@ export default function LessonsList({ onBack, onSelectLesson }: LessonsListProps
 
   return (
     <div className="h-full overflow-auto bg-white">
-      {/* Mobile Header */}
-      <div className="md:hidden sticky top-0 z-10 bg-white border-b border-gray-200 px-4 py-3">
-        <div className="flex items-center gap-3">
-          <button onClick={onBack} className="p-2 -ml-2 hover:bg-gray-100 rounded-lg">
-            <ArrowLeft className="w-5 h-5 text-[#101828]" />
-          </button>
-          <h1 className="text-xl font-bold text-[#101828]">Lista de Lições</h1>
+      {/* Header Padronizado */}
+      <div className="bg-white border-b border-gray-200 px-4 md:px-8 py-3 md:py-4">
+        <div className="flex items-center justify-between max-w-5xl mx-auto min-h-[40px]">
+          <div className="flex items-center gap-3">
+            <button onClick={onBack} className="p-2 hover:bg-gray-100 rounded-full transition-colors">
+              <ArrowLeft className="w-5 h-5 text-[#101828]" />
+            </button>
+            <h1 className="text-xl md:text-2xl font-bold text-[#101828]">Lista de Lições</h1>
+          </div>
         </div>
       </div>
 
-      {/* Desktop Header */}
-      <div className="hidden md:block px-8 py-6 border-b border-gray-200">
-        <div className="flex items-center gap-4">
-          <button onClick={onBack} className="p-2 hover:bg-gray-100 rounded-lg">
-            <ArrowLeft className="w-6 h-6 text-[#101828]" />
-          </button>
-          <h1 className="text-3xl font-bold text-[#101828]">Trilhas de Aprendizado</h1>
-        </div>
-      </div>
-
-      <div className="p-4 md:p-8">
+      <div className="p-4 md:p-8 max-w-5xl mx-auto">
         {/* Filters */}
         <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
           {["Todas", "Básico", "Intermediário", "Avançado"].map((filter) => (
